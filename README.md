@@ -101,7 +101,7 @@ The downloader defaults to the public `metal_nut` mirror at [Hugging Face](https
 Run the applications:
 
 ```bash
-PYTHONPATH=src streamlit run src/aqi/streamlit_app.py
+streamlit run src/aqi/streamlit_app.py
 PYTHONPATH=src uvicorn aqi.api:app --reload
 curl -F 'file=@path/to/image.png' http://127.0.0.1:8000/predict
 ```
