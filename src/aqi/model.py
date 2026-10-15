@@ -4,7 +4,6 @@ import numpy as np
 import torch
 from torch import nn
 from torchvision.models import resnet18, ResNet18_Weights
-from torchvision.transforms.functional import normalize
 
 
 @dataclass

@@ -13,7 +13,7 @@ PYTHONPATH=src python -m aqi.cli --data data/mvtec_ad --category metal_nut --out
 pytest -q
 ```
 
-The CLI validates the dataset, fits on `train/good`, evaluates on the complete test split, writes `artifacts/metal_nut/metrics.json`, a memory bank, and up to 12 heatmap/overlay PNGs. **Metrics are produced by execution; no results are hard-coded.** Use `--limit-train` / `--limit-test` only for smoke tests.
+The CLI validates the dataset, splits `train/good` deterministically into fit and defect-free validation subsets, selects the anomaly threshold from validation scores only, evaluates on the untouched test split, and writes `artifacts/metal_nut/metrics.json`, a memory bank, and up to 12 heatmap/overlay PNGs. **Metrics are produced by execution; no results are hard-coded.** Use `--limit-train` / `--limit-test` only for smoke tests.
 
 ## Demo and API
 
@@ -28,7 +28,7 @@ Set `AQI_MEMORY_BANK` to use a different saved artifact. `/health` is available 
 ## Design notes
 
 - **Model:** PatchCore-style nearest-neighbour detection. Frozen ImageNet ResNet18 layer2/layer3 patch embeddings are L2-normalized; a deterministic evenly spaced coreset keeps the memory bank CPU-friendly. The image score is the mean of the top 10% patch distances; the heatmap is the normalized patch distance map.
-- **Metrics:** image-level AUROC and average precision use test good/defect labels. Pixel-level AUROC and average precision use MVTec ground-truth masks; good images receive all-zero masks. F1/confusion matrix are reported only at the transparent median-score threshold and are not a replacement for threshold-free metrics.
+- **Metrics:** image-level AUROC and average precision use test good/defect labels. Pixel-level AUROC and average precision use MVTec ground-truth masks; good images receive all-zero masks. F1/confusion matrix use a threshold selected from defect-free validation images only; they are not a replacement for threshold-free metrics.
 - **Data validation:** `validate_mvtec` checks the expected category folders and non-empty train/test image sets before model execution.
 - **Reproducibility:** CPU is the default when CUDA is absent; GPU can be selected with `--device cuda`. Torchvision may download ResNet18 weights on first run.
 
