@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 import streamlit as st
 from PIL import Image
-from .model import PatchCore
+from aqi.model import PatchCore
 
 st.set_page_config(page_title="AI Quality Inspection", layout="wide")
 st.title("AI Quality Inspection — metal_nut")

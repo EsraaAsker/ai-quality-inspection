@@ -2,6 +2,41 @@
 
 CPU-compatible industrial anomaly detection for the MVTec AD `metal_nut` category using a frozen ImageNet ResNet18 PatchCore-style memory bank.
 
+> A compact, reproducible baseline for visual quality inspection: learn normal appearance from defect-free parts, then localize unusual regions with nearest-neighbour patch distances.
+
+## What is included
+
+- Leakage-aware fit/validation/test workflow with validation-only threshold selection
+- PatchCore-style ResNet18 layer2/layer3 patch memory bank and heatmaps
+- Image-level and pixel-level evaluation against MVTec ground truth
+- Streamlit inspection UI and FastAPI prediction endpoint
+- Focused tests, reproducible example generation, and a CPU-loadable model artifact
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A[MVTec AD<br/>metal_nut] --> B[Dataset validation]
+    B --> C[176 normal fit images]
+    B --> D[44 normal validation images]
+    B --> E[115 untouched test images + masks]
+    C --> F[ResNet18 layer2/layer3<br/>ImageNet normalization]
+    F --> G[Patch embeddings<br/>L2 normalize + coreset]
+    G --> H[Nearest-neighbour<br/>memory bank]
+    D --> I[99.5th percentile<br/>validation threshold]
+    H --> J[Image score + heatmap]
+    I --> K[Defect decision]
+    J --> K
+    E --> L[AUROC/AP + pixel metrics<br/>confusion matrix]
+    J --> L
+    H --> M[FastAPI /predict]
+    H --> N[Streamlit demo]
+```
+
+## Technologies
+
+Python · PyTorch · Torchvision · scikit-learn · Pillow · Matplotlib · FastAPI · Streamlit
+
 ## Audited evaluation
 
 Dataset counts: **220 defect-free training images**, split deterministically into **176 fit** and **44 validation** images; **115 test images** (**22 normal, 93 anomalous**). Fit/validation overlap and train/test overlap were both zero. All 93 anomalous test images had a ground-truth mask.
@@ -37,10 +72,16 @@ A threshold estimated from only 44 normal images is statistically limited. At th
 
 Each example contains the original image, PatchCore heatmap, heatmap overlay, and MVTec ground-truth mask:
 
+![Streamlit demo](artifacts/metal_nut/examples/streamlit_demo.png)
+
+The real Streamlit interface above was captured from the running app after the model artifact loaded. The evaluation examples below show actual inference outputs rather than design mockups.
+
 - [Normal example](artifacts/metal_nut/examples/normal.png)
 - [Detected defect example](artifacts/metal_nut/examples/detected_defect.png)
 - [False-negative example](artifacts/metal_nut/examples/false_negative.png)
 - [Example manifest](artifacts/metal_nut/examples/manifest.json)
+
+![Detected defect heatmap and ground truth](artifacts/metal_nut/examples/detected_defect.png)
 
 The false-negative example is a real `color/004.png` test image with score `0.5760245919`, below the validation threshold. The detected example is a real `flip/011.png` image with score `0.8342230916`.
 
@@ -66,6 +107,13 @@ curl -F 'file=@path/to/image.png' http://127.0.0.1:8000/predict
 ```
 
 Set `AQI_MEMORY_BANK` to use another saved memory bank. The checked-in project code expects the saved artifact at `artifacts/metal_nut/memory_bank.pt` by default.
+
+### API reference
+
+- `GET /health` returns service status and the configured memory-bank path.
+- `POST /predict` accepts a multipart `file` containing a PNG or JPEG and returns `anomaly_score`, a 14×14 normalized `heatmap`, and the model name.
+
+Scores are anomaly scores, not calibrated probabilities.
 
 ## Design and limitations
 
@@ -94,3 +142,11 @@ tests/         focused unit and regression tests
 artifacts/     corrected metrics, memory bank, and visual examples
 data/          local dataset only; excluded from ZIP and Git
 ```
+
+## Contributing
+
+Small, focused pull requests are welcome. Keep dataset files, model caches, credentials, virtual environments, and temporary generated files out of Git. Run `PYTHONPATH=src pytest -q` before submitting changes and tie evaluation claims to reproducible artifacts.
+
+## License
+
+Project code is released under the MIT License in [`LICENSE`](LICENSE). The MVTec AD dataset is separate and remains subject to its upstream CC BY-NC-SA 4.0 terms.
