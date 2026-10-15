@@ -1,0 +1,23 @@
+{
+  "n_images": 115,
+  "n_anomalies": 93,
+  "image_auroc": 0.9496578690127078,
+  "image_average_precision": 0.9881065982480634,
+  "image_f1_at_validation_threshold": 0.8466257668711656,
+  "image_threshold": 0.6514729854464529,
+  "threshold_source": "44 defect-free train images, quantile=0.995",
+  "pixel_auroc": 0.9051387851743354,
+  "pixel_average_precision": 0.5622084751751611,
+  "confusion_matrix_at_validation_threshold": [
+    [
+      21,
+      1
+    ],
+    [
+      24,
+      69
+    ]
+  ],
+  "n_fit_train": 176,
+  "n_validation": 44
+}

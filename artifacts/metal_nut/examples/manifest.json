@@ -1,0 +1,29 @@
+[
+  {
+    "example": "normal",
+    "image": "data/mvtec_ad/metal_nut/test/good/000.png",
+    "defect_type": "good",
+    "label": 0,
+    "score": 0.5840791463851929,
+    "threshold": 0.6514729854464529,
+    "predicted_anomaly": false
+  },
+  {
+    "example": "detected_defect",
+    "image": "data/mvtec_ad/metal_nut/test/flip/011.png",
+    "defect_type": "flip",
+    "label": 1,
+    "score": 0.8342230916023254,
+    "threshold": 0.6514729854464529,
+    "predicted_anomaly": true
+  },
+  {
+    "example": "false_negative",
+    "image": "data/mvtec_ad/metal_nut/test/color/004.png",
+    "defect_type": "color",
+    "label": 1,
+    "score": 0.57602459192276,
+    "threshold": 0.6514729854464529,
+    "predicted_anomaly": false
+  }
+]

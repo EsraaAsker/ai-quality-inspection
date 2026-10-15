@@ -3,10 +3,18 @@ __pycache__/
 .pytest_cache/
 *.py[cod]
 .DS_Store
-artifacts/*
-!artifacts/.gitkeep
-data/
 *.zip
 *.pth
-*.pt
 .env
+data/
+
+# Keep generated artifacts out by default, but publish the verified small artifact and examples.
+artifacts/*
+!artifacts/metal_nut/
+artifacts/metal_nut/*
+!artifacts/metal_nut/memory_bank.pt
+!artifacts/metal_nut/metrics.json
+!artifacts/metal_nut/examples/
+artifacts/metal_nut/examples/*
+!artifacts/metal_nut/examples/*.png
+!artifacts/metal_nut/examples/manifest.json
